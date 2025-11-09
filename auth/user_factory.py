@@ -13,3 +13,7 @@ def get_a_new_user(user_id: str, username: str, password: str) -> User:
         salt=salt
     )
     return new_user
+
+def verify_user_password(user: User, password: str) -> bool:
+    hash_password = hashlib.sha256((password + user.salt).encode()).hexdigest()
+    return hash_password == user.hash_password

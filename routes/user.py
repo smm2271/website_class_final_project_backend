@@ -3,7 +3,7 @@ from database.service import get_user_by_user_id, create_user
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.responses import JSONResponse, RedirectResponse
 from database.database import get_session
-from auth.user_factory import get_a_new_user
+from auth.user_factory import get_a_new_user, verify_user_password
 from sqlmodel import Session
 import pydantic
 
@@ -30,12 +30,15 @@ def login_user(user: UserLoginForm, session: Session = Depends(get_session)):
     if not db_user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
+    if not verify_user_password(db_user, user.password):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid password")
+
     access_token = create_access_token({"sub": str(db_user.id)})
     refresh_token = create_refresh_token({"sub": str(db_user.id)})
+    
     resp = JSONResponse(content={"id": str(db_user.id), "user_id": db_user.user_id, "username": db_user.username}, status_code=status.HTTP_200_OK)
-    # set cookies on the response object (use httponly for tokens)
-    resp.set_cookie(key="access_token", value=access_token, httponly=True)
-    resp.set_cookie(key="refresh_token", value=refresh_token, httponly=True)
+    resp.set_cookie(key="access_token", value=access_token)
+    resp.set_cookie(key="refresh_token", value=refresh_token)
     return resp
 
 @router.post("/logout")
@@ -58,8 +61,8 @@ def refresh_token(request: Request):
     access_token = create_access_token({"sub": str(user.id)})
     refresh_token_new = create_refresh_token({"sub": str(user.id)})
     resp = JSONResponse(content={"message": "Token refreshed successfully"}, status_code=status.HTTP_200_OK)
-    resp.set_cookie(key="access_token", value=access_token, httponly=True)
-    resp.set_cookie(key="refresh_token", value=refresh_token_new, httponly=True)
+    resp.set_cookie(key="access_token", value=access_token)
+    resp.set_cookie(key="refresh_token", value=refresh_token_new)
     return resp
 
 

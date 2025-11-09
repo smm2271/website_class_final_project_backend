@@ -1,7 +1,18 @@
 import fastapi
 import uvicorn
+from fastapi.middleware.cors import CORSMiddleware
+from routes import user
 
 app = fastapi.FastAPI()
+app.include_router(user.router)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 async def read_root():
