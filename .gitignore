@@ -1,3 +1,8 @@
 .env
 __pycache__/
 *.pyc
+
+# 測試文件
+test_full.py
+test_requests.py
+test_routes.py

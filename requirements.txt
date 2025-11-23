@@ -1,0 +1,23 @@
+# FastAPI 核心框架
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+
+# 資料庫相關
+sqlmodel==0.0.14
+psycopg2-binary==2.9.9
+sqlalchemy==2.0.23
+
+# 身份驗證與安全
+python-jose[cryptography]==3.3.0
+python-multipart==0.0.6
+
+# 環境變數管理
+python-dotenv==1.0.0
+
+# 時區處理
+pytz==2023.3
+
+# CORS 中介軟體（FastAPI 內建）
+# 測試工具（開發用）
+httpx==0.25.1
+pytest==7.4.3
