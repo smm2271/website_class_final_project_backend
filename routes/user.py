@@ -7,7 +7,7 @@ from auth.user_factory import get_a_new_user, verify_user_password
 from sqlmodel import Session
 import pydantic
 
-class UserLoginResponseModel(pydantic.BaseModel):
+class UserResponseModel(pydantic.BaseModel):
     id: str
     user_id: str
     username: str
@@ -21,10 +21,10 @@ class UserRegisterForm(pydantic.BaseModel):
     username: str
     password: str
 
-router = APIRouter(prefix="/users")
+router = APIRouter()
 
 
-@router.post("/login", response_model=UserLoginResponseModel)
+@router.post("/login", response_model=UserResponseModel)
 def login_user(user: UserLoginForm, session: Session = Depends(get_session)):
     db_user = get_user_by_user_id(session, user.user_id)
     if not db_user:
@@ -66,7 +66,7 @@ def refresh_token(request: Request):
     return resp
 
 
-@router.post("/register", response_model=UserLoginResponseModel)
+@router.post("/register", response_model=UserResponseModel)
 def register_user(user: UserRegisterForm, session: Session = Depends(get_session)):
     db_user = get_user_by_user_id(session, user.user_id)
     if db_user:
@@ -75,4 +75,3 @@ def register_user(user: UserRegisterForm, session: Session = Depends(get_session
     new_user = get_a_new_user(user.user_id, user.username, user.password)
     created = create_user(session, new_user)
     return JSONResponse(content={"id": str(created.id), "user_id": created.user_id, "username": created.username}, status_code=status.HTTP_201_CREATED)
-
