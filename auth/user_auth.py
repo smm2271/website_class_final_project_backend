@@ -4,6 +4,7 @@ from jose import JWTError, jwt
 import os
 from database.models import User
 from datetime import datetime, timedelta
+from fastapi import HTTPException
 
 
 SECRET_KEY = os.urandom(32)
@@ -16,7 +17,9 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 
-def verify_token(token: str) -> User | None:
+def verify_token(token: str | None) -> User | None:
+    if not token:
+        return None
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id: str = payload.get("sub")
@@ -28,11 +31,13 @@ def verify_token(token: str) -> User | None:
         return None
 
 
+
 def create_access_token(data: dict) -> str:
     to_encode = data.copy()
     to_encode.update({"exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
 
 
 def create_refresh_token(data: dict) -> str:
@@ -42,6 +47,6 @@ def create_refresh_token(data: dict) -> str:
     return encoded_jwt
 
 
-def get_current_user(token: str = oauth2_scheme) -> User | None:
-    user = verify_token(token)
-    return user
+
+def get_current_user(token: str | None):
+    return verify_token(token)

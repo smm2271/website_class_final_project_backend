@@ -108,7 +108,6 @@ def get_read_messages_by_user_in_chat_room(session: Session, user: User, chat_ro
 
 # chat room service
 
-
 def create_chat_room(session: Session, chat_room: ChatRoom) -> ChatRoom:
     session.add(chat_room)
     session.commit()
