@@ -1,4 +1,4 @@
-from database.service import get_user_by_user_id
+from database.service import get_user_by_id
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 import os
@@ -7,7 +7,8 @@ from datetime import datetime, timedelta
 from fastapi import HTTPException
 
 
-SECRET_KEY = os.urandom(32)
+# SECRET_KEY = os.urandom(32)
+SECRET_KEY = "123456789"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 REFRESH_TOKEN_EXPIRE_DAYS = 3

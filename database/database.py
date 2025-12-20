@@ -1,4 +1,5 @@
 # database.py
+from contextlib import contextmanager
 from sqlmodel import SQLModel, create_engine
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
@@ -18,8 +19,14 @@ def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
 
 
-def get_session():
+@contextmanager
+def get_session_context():
     with Session(engine) as session:
+        yield session
+
+
+def get_session():
+    with get_session_context() as session:
         yield session
 
 
