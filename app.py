@@ -3,15 +3,18 @@ import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 from routes import user
 from routes import message
+from dotenv import load_dotenv
+import os
 
 app = fastapi.FastAPI()
 app.include_router(user.router, prefix="/user", tags=["user"])
 app.include_router(message.router, prefix="/message", tags=["message"])
 print("User routes loaded.")
+load_dotenv()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[],
+    allow_origins=[os.getenv("FRONTEND_URL") or "http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

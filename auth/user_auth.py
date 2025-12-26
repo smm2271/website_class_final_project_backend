@@ -3,7 +3,7 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 import os
 from database.models import User
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from fastapi import HTTPException
 from dotenv import load_dotenv
 
@@ -22,7 +22,6 @@ REFRESH_TOKEN_EXPIRE_DAYS = 3
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
-
 def verify_token(token: str | None) -> User | None:
     if not token:
         return None
@@ -39,21 +38,20 @@ def verify_token(token: str | None) -> User | None:
         return None
 
 
-
 def create_access_token(data: dict) -> str:
     to_encode = data.copy()
-    to_encode.update({"exp": datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)})
+    to_encode.update({"exp": datetime.now(timezone.utc) +
+                     timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
-
 
 
 def create_refresh_token(data: dict) -> str:
     to_encode = data.copy()
-    to_encode.update({"exp": datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)})
+    to_encode.update({"exp": datetime.utcnow() +
+                     timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
-
 
 
 def get_current_user(token: str | None):

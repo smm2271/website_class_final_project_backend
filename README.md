@@ -50,6 +50,7 @@ DB_HOST="localhost"
 DB_NAME="your_db"
 DB_PORT=5432
 SECRET_KEY="your_secret_key"
+FRONTEND_URL="your_frontend_url"
 ```
 
 ## 初始化資料庫
