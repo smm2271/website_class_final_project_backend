@@ -83,12 +83,12 @@ class ConnectManager:
                             limit=limit,
                             before_created_at=before
                         )
+                        # 直接使用 DTO 中的 author_name，避免每則訊息額外查詢作者（N+1）
                         response_messages = []
                         for m in messages:
-                            author = get_user_by_id(session, m.author_id)
                             response_messages.append({
                                 "id": str(m.id),
-                                "author_name": author.username if author else "Unknown",
+                                "author_name": m.author_name,
                                 "content": m.content,
                                 "created_at": str(m.created_at),
                                 "is_read": m.is_read

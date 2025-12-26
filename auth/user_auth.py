@@ -48,7 +48,7 @@ def create_access_token(data: dict) -> str:
 
 def create_refresh_token(data: dict) -> str:
     to_encode = data.copy()
-    to_encode.update({"exp": datetime.utcnow() +
+    to_encode.update({"exp": datetime.now(timezone.utc) +
                      timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt

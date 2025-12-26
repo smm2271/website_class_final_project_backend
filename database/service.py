@@ -81,6 +81,7 @@ class MessageService:
     class MessageDTO:
         id: UUID
         author_id: UUID
+        author_name: str
         chatroom_id: UUID
         content: str
         created_at: any
@@ -129,11 +130,14 @@ class MessageService:
             .exists()
         )
 
+        # 使用 JOIN 一次取出作者名稱，避免在迭代中每則訊息查詢作者造成 N+1
         query = (
             self.session.query(
                 Message,
+                User.username.label("author_name"),
                 is_read_subq.label("is_read")
             )
+            .join(User, Message.author_id == User.id)
             .filter(
                 Message.chatroom_id == room_id,
                 Message.is_deleted.is_(False)
@@ -147,10 +151,11 @@ class MessageService:
 
         rows = query.all()
         dto_list: List[MessageService.MessageDTO] = []
-        for msg, is_read in rows:
+        for msg, author_name, is_read in rows:
             dto_list.append(MessageService.MessageDTO(
                 id=msg.id,
                 author_id=msg.author_id,
+                author_name=author_name,
                 chatroom_id=msg.chatroom_id,
                 content=msg.content,
                 created_at=msg.created_at,
