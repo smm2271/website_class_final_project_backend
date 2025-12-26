@@ -235,12 +235,6 @@ def delete_user(session: Session, user: User) -> None:
     session.commit()
 
 
-def is_user_valid(session: Session, user_id: str, password: str) -> bool:
-    statement = select(User).where(User.user_id == user_id,
-                                   User.hash_password == password)
-    result = session.exec(statement).first()
-    return (True if result else False)
-
 # message service
 
 

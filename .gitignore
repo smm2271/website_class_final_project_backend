@@ -6,3 +6,6 @@ __pycache__/
 test_full.py
 test_requests.py
 test_routes.py
+
+/report
+.gitignore

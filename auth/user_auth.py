@@ -5,10 +5,15 @@ import os
 from database.models import User
 from datetime import datetime, timedelta
 from fastapi import HTTPException
+from dotenv import load_dotenv
 
+load_dotenv()
 
-# SECRET_KEY = os.urandom(32)
-SECRET_KEY = "123456789"
+if os.getenv("SECRET_KEY"):
+    SECRET_KEY = os.getenv("SECRET_KEY").encode()
+else:
+    SECRET_KEY = os.urandom(32)
+# SECRET_KEY = "123456789"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 REFRESH_TOKEN_EXPIRE_DAYS = 3
@@ -26,7 +31,9 @@ def verify_token(token: str | None) -> User | None:
         user_id: str = payload.get("sub")
         if user_id is None:
             return None
-        user = User(id=user_id)
+        user = get_user_by_id(user_id)
+        if user is None:
+            return None
         return user
     except JWTError:
         return None
