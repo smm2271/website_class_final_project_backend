@@ -1,10 +1,8 @@
 from database.service import get_user_by_id
-from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 import os
 from database.models import User
 from datetime import datetime, timedelta, timezone
-from fastapi import HTTPException
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -13,13 +11,10 @@ if os.getenv("SECRET_KEY"):
     SECRET_KEY = os.getenv("SECRET_KEY").encode()
 else:
     SECRET_KEY = os.urandom(32)
-# SECRET_KEY = "123456789"
+    
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 REFRESH_TOKEN_EXPIRE_DAYS = 3
-
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 def verify_token(token: str | None) -> User | None:

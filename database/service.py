@@ -4,7 +4,6 @@ from uuid import UUID
 from dataclasses import dataclass
 from typing import List
 from database.models import User, ChatRoom, ChatRoomPivot, Message, MessageRead
-from functools import lru_cache
 from datetime import datetime
 from zoneinfo import ZoneInfo
 

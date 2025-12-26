@@ -113,10 +113,6 @@ def refresh_token(request: Request):
     )
     return resp
 
-@router.get("/debug-cookies")
-async def debug_cookies(request: Request):
-    print("backend received cookies:", request.cookies)
-    return {"cookies": dict(request.cookies)}
 
 @router.post("/register", response_model=UserResponseModel)
 def register_user(user: UserRegisterForm, session: Session = Depends(get_session)):

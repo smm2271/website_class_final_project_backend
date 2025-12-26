@@ -118,6 +118,7 @@ class ConnectManager:
                     try:
                         room_id = UUID(data["chatroom_id"])
                     except Exception:
+                        await websocket.send_json({"error": "invalid room id"})
                         continue
                     with get_session_context() as session:
                         chat_service = ChatRoomService(session)
