@@ -5,6 +5,8 @@ from datetime import datetime
 from uuid import UUID, uuid4
 import pytz
 
+USERS_ID_COL = "Users.id"
+
 
 # -----------------------------
 # 1. Users 表
@@ -12,7 +14,8 @@ import pytz
 class User(SQLModel, table=True):
     __tablename__ = "Users"
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    user_id: str = Field(max_length=20, unique=True, nullable=False, index=True)
+    user_id: str = Field(max_length=20, unique=True,
+                         nullable=False, index=True)
     username: str = Field(max_length=20, nullable=False)
     hash_password: str = Field(max_length=255, nullable=False)
     salt: str = Field(max_length=255, nullable=False)
@@ -32,7 +35,8 @@ class ChatRoom(SQLModel, table=True):
     __tablename__ = "ChatRoomList"
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(pytz.utc))
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(pytz.utc))
     name: Optional[str] = Field(default=None, max_length=50)
 
     # 關係：成員
@@ -44,12 +48,13 @@ class ChatRoom(SQLModel, table=True):
 # -----------------------------
 # 3. ChatRoom_pivot 中介表（多對多）
 # -----------------------------
+
 class ChatRoomPivot(SQLModel, table=True):
     __tablename__ = "ChatRoom_pivot"
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     chatroom_id: UUID = Field(foreign_key="ChatRoomList.id", nullable=False)
-    user_id: UUID = Field(foreign_key="Users.id", nullable=False)
+    user_id: UUID = Field(foreign_key=USERS_ID_COL, nullable=False)
     joined_at: datetime = Field(default_factory=lambda: datetime.now(pytz.utc))
 
     # 關係
@@ -70,10 +75,11 @@ class Message(SQLModel, table=True):
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     chatroom_id: UUID = Field(foreign_key="ChatRoomList.id", nullable=False)
-    author_id: UUID = Field(foreign_key="Users.id", nullable=False)
+    author_id: UUID = Field(foreign_key=USERS_ID_COL, nullable=False)
     content: str = Field(nullable=False)
     is_deleted: bool = Field(default=False)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(pytz.utc))
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(pytz.utc))
 
     # 關係
     chatroom: ChatRoom = Relationship(back_populates="messages")
@@ -96,8 +102,9 @@ class MessageRead(SQLModel, table=True):
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     message_id: UUID = Field(foreign_key="Messages.id", nullable=False)
-    user_id: UUID = Field(foreign_key="Users.id", nullable=False)
-    read_at: datetime = Field(default_factory=lambda: datetime.now(pytz.utc), nullable=False)
+    user_id: UUID = Field(foreign_key=USERS_ID_COL, nullable=False)
+    read_at: datetime = Field(
+        default_factory=lambda: datetime.now(pytz.utc), nullable=False)
 
     # 關係
     message: Message = Relationship(back_populates="read_by")
