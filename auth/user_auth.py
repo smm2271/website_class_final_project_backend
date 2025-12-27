@@ -4,6 +4,7 @@ import os
 from database.models import User
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
+from database.database import get_session
 
 load_dotenv()
 
@@ -11,7 +12,7 @@ if os.getenv("SECRET_KEY"):
     SECRET_KEY = os.getenv("SECRET_KEY").encode()
 else:
     SECRET_KEY = os.urandom(32)
-    
+
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 REFRESH_TOKEN_EXPIRE_DAYS = 3
@@ -20,15 +21,15 @@ REFRESH_TOKEN_EXPIRE_DAYS = 3
 def verify_token(token: str | None) -> User | None:
     if not token:
         return None
-        
+
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         if not (user_id := payload.get("sub")):
             return None
-            
-        return get_user_by_id(user_id)
 
-    except (JWTError, ValueError): # 捕捉具體可能的錯誤
+        return get_user_by_id(get_session(), user_id)
+
+    except (JWTError, ValueError):  # 捕捉具體可能的錯誤
         return None
 
 
