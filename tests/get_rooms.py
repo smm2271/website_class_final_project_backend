@@ -2,14 +2,16 @@ import requests
 import pprint
 
 class test_class():
-    def __init__(self):
+    def __init__(self, user_id, password):
+        self.user_id = user_id
+        self.password = password
         self.token = self.login()
     
     def login(self):
         url = "http://127.0.0.1:8000/user/login"
         payload = {
-            "user_id": "sumou",
-            "password": "sumou981008"
+            "user_id": self.user_id,
+            "password": self.password
         }
         response = requests.post(url, json=payload)
         if response.status_code == 200:
