@@ -11,6 +11,8 @@ class ConnectManager:
         # chatroom_id -> list[WebSocket]
         self.connections: Dict[UUID, List[WebSocket]] = {}
 
+    ROOM_NOT_EXISTS = {"error": "room not exists"}
+    
     async def add_connect(self, websocket: WebSocket, user: User):
         """
         主連線進入點，負責分派不同的 action_type 到對應的處理器
@@ -68,7 +70,7 @@ class ConnectManager:
             room = chat_service.get_chat_room_by_id(room_id)
             
             if not room:
-                await websocket.send_json({"error": "room not exists"})
+                await websocket.send_json(self.ROOM_NOT_EXISTS)
                 return
 
             new_message = message_service.create_message(user, room, content)
@@ -100,7 +102,7 @@ class ConnectManager:
             chat_service = ChatRoomService(session)
             room = chat_service.get_chat_room_by_id(room_id)
             if not room:
-                await websocket.send_json({"error": "room not exists"})
+                await websocket.send_json(self.ROOM_NOT_EXISTS)
                 return
 
             message_service = MessageService(session)
@@ -140,7 +142,7 @@ class ConnectManager:
             chat_service = ChatRoomService(session)
             room = chat_service.get_chat_room_by_id(room_id)
             if not room:
-                await websocket.send_json({"error": "room not exists"})
+                await websocket.send_json(self.ROOM_NOT_EXISTS)
                 return
             
             if user not in room.members:
