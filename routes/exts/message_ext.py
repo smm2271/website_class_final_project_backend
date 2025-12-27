@@ -2,7 +2,7 @@ from fastapi import WebSocket, WebSocketDisconnect
 from database.models import User
 from typing import Dict, List
 from uuid import UUID
-from database.service import ChatRoomService, MessageService,get_user_by_id
+from database.service import ChatRoomService, MessageService, get_user_by_id
 from database.database import get_session_context
 
 
@@ -44,7 +44,8 @@ class ConnectManager:
                         if not room:
                             await websocket.send_json({"error": "room not exists"})
                             continue
-                        new_message = message_service.create_message(user, room, content)
+                        new_message = message_service.create_message(
+                            user, room, content)
                         author = get_user_by_id(session, new_message.author_id)
                         response_messages = [{
                             "id": str(new_message.id),
@@ -93,7 +94,8 @@ class ConnectManager:
                                 "created_at": str(m.created_at),
                                 "is_read": m.is_read
                             })
-                    print(f"Sending {len(messages)} messages to user {user.id} for room {room_id}")
+                    print(
+                        f"Sending {len(messages)} messages to user {user.id} for room {room_id}")
                     await websocket.send_json({
                         "type": "message_list",
                         "chatroom_id": str(room_id),

@@ -20,16 +20,15 @@ REFRESH_TOKEN_EXPIRE_DAYS = 3
 def verify_token(token: str | None) -> User | None:
     if not token:
         return None
+        
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id: str = payload.get("sub")
-        if user_id is None:
+        if not (user_id := payload.get("sub")):
             return None
-        user = get_user_by_id(user_id)
-        if user is None:
-            return None
-        return user
-    except JWTError:
+            
+        return get_user_by_id(user_id)
+
+    except (JWTError, ValueError): # 捕捉具體可能的錯誤
         return None
 
 
