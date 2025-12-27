@@ -170,7 +170,7 @@ class ConnectManager:
             self.disconnect(websocket)
 
     def disconnect(self, websocket: WebSocket):
-        for room_id in list(self.connections.keys()):
+        for room_id in self.connections.keys():
             if websocket in self.connections[room_id]:
                 self.connections[room_id].remove(websocket)
                 if not self.connections[room_id]:
